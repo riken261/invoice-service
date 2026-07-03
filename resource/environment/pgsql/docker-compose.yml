@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: harbor.techotakus.cloud/proxy/postgres:16
+    container_name: pg-service
+    restart: always
+    environment:
+      POSTGRES_USER: pgsql
+      POSTGRES_PASSWORD: pgsql
+      POSTGRES_DB: postgres
+      TZ: Asia/Shanghai
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pgsql -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 3

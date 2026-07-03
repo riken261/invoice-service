@@ -1,0 +1,6 @@
+services:
+  keycloak:
+    image: harbor.techotakus.cloud/proxy/keycloak/keycloak:latest
+    command: start-dev --import-realm
+    volumes:
+      - ./invoice-realm.json:/opt/keycloak/data/import/invoice-realm.json
