@@ -1,0 +1,104 @@
+spring:
+  application:
+    name: invoice-gateway
+  profiles:
+    active: dev
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: invoice-health
+              uri: https://httpbin.org
+              predicates:
+                - Path=/gateway/health
+              filters:
+                - SetPath=/status/200
+            - id: invoice-file-service
+              uri: ${invoice.services.file.uri:http://localhost:8081}
+              predicates:
+                - Path=/${invoice.services.file.application-name:invoice-file-service}/**
+              filters:
+                - StripPrefix=1
+            - id: invoice-core-service
+              uri: ${invoice.services.core.uri:http://localhost:8082}
+              predicates:
+                - Path=/${invoice.services.core.application-name:invoice-core-service}/**
+              filters:
+                - StripPrefix=1
+            - id: invoice-ocr-service
+              uri: ${invoice.services.ocr.uri:http://localhost:8083}
+              predicates:
+                - Path=/${invoice.services.ocr.application-name:invoice-ocr-service}/**
+              filters:
+                - StripPrefix=1
+            - id: invoice-review-service
+              uri: ${invoice.services.review.uri:http://localhost:8084}
+              predicates:
+                - Path=/${invoice.services.review.application-name:invoice-review-service}/**
+              filters:
+                - StripPrefix=1
+            - id: invoice-claim-service
+              uri: ${invoice.services.claim.uri:http://localhost:8085}
+              predicates:
+                - Path=/${invoice.services.claim.application-name:invoice-claim-service}/**
+              filters:
+                - StripPrefix=1
+            - id: invoice-integration-service
+              uri: ${invoice.services.integration.uri:http://localhost:8086}
+              predicates:
+                - Path=/${invoice.services.integration.application-name:invoice-integration-service}/**
+              filters:
+                - StripPrefix=1
+            - id: invoice-authorization-service
+              uri: ${invoice.services.authorization.uri:http://localhost:8087}
+              predicates:
+                - Path=/${invoice.services.authorization.application-name:invoice-authorization-service}/**
+              filters:
+                - StripPrefix=1
+            - id: invoice-common-service
+              uri: ${invoice.services.common.uri:http://localhost:8088}
+              predicates:
+                - Path=/${invoice.services.common.application-name:invoice-common-service}/**
+              filters:
+                - StripPrefix=1
+
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  observations:
+    key-values:
+      application: ${spring.application.name}
+  tracing:
+    propagation:
+      produce:
+        - W3C
+      consume:
+        - W3C
+    sampling:
+      probability: 1.0
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+logging:
+  structured:
+    format:
+      console: logstash
+
+invoice:
+  gateway:
+    session:
+      cookie-name: ${INVOICE_BFF_SESSION_COOKIE_NAME:INVOICE_BFF_SESSION}
+      redis-key-prefix: ${INVOICE_BFF_SESSION_REDIS_KEY_PREFIX:invoice:gateway:bff-session:}
+      public-bff-suffixes:
+        - /bff/v1/auth/login-url
+        - /bff/v1/auth/callback
+        - /bff/v1/auth/logout

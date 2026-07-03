@@ -1,0 +1,29 @@
+server:
+  port: ${OCR_SERVICE_SERVER_PORT:8080}
+
+invoice:
+  ocr:
+    vat-verify-enabled: ${INVOICE_OCR_VAT_VERIFY_ENABLED}
+    base-confidence: ${INVOICE_OCR_BASE_CONFIDENCE}
+    low-confidence-threshold: ${INVOICE_OCR_LOW_CONFIDENCE_THRESHOLD}
+    integration:
+      base-url: ${INVOICE_INTEGRATION_SERVICE_BASE_URL}
+
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:http://jaeger-collector:4318/v1/traces}
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${INVOICE_DATASOURCE_URL}
+    username: ${INVOICE_DATASOURCE_USERNAME}
+    password:  ${INVOICE_DATASOURCE_PASSWORD}
+
+logging:
+  structured:
+    format:
+      console: logstash

@@ -1,0 +1,44 @@
+server:
+  port: ${GATEWAY_SERVER_PORT:8080}
+
+spring:
+  data:
+    redis:
+      host: ${INVOICE_REDIS_HOST}
+      port: ${INVOICE_REDIS_PORT}
+      database: ${INVOICE_REDIS_DATABASE}
+      password: ${INVOICE_REDIS_PASSWORD:}
+
+invoice:
+  services:
+    file:
+      application-name: ${FILE_SERVICE_APPLICATION_NAME:invoice-file-service}
+      uri: ${FILE_SERVICE_URI:http://invoice-file-service:8081}
+    core:
+      application-name: ${CORE_SERVICE_APPLICATION_NAME:invoice-core-service}
+      uri: ${CORE_SERVICE_URI:http://invoice-core-service:8082}
+    ocr:
+      application-name: ${OCR_SERVICE_APPLICATION_NAME:invoice-ocr-service}
+      uri: ${OCR_SERVICE_URI:http://invoice-ocr-service:8083}
+    review:
+      application-name: ${REVIEW_SERVICE_APPLICATION_NAME:invoice-review-service}
+      uri: ${REVIEW_SERVICE_URI:http://invoice-review-service:8084}
+    claim:
+      application-name: ${CLAIM_SERVICE_APPLICATION_NAME:invoice-claim-service}
+      uri: ${CLAIM_SERVICE_URI:http://invoice-claim-service:8085}
+    integration:
+      application-name: ${INTEGRATION_SERVICE_APPLICATION_NAME:invoice-integration-service}
+      uri: ${INTEGRATION_SERVICE_URI:http://invoice-integration-service:8086}
+    authorization:
+      application-name: ${AUTHORIZATION_SERVICE_APPLICATION_NAME:invoice-authorization-service}
+      uri: ${AUTHORIZATION_SERVICE_URI:http://invoice-authorization-service:8087}
+    common:
+      application-name: ${COMMON_SERVICE_APPLICATION_NAME:invoice-common-service}
+      uri: ${COMMON_SERVICE_URI:http://invoice-common-service:8088}
+
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:http://jaeger-collector:4318/v1/traces}

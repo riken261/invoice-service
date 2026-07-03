@@ -1,0 +1,55 @@
+server:
+  port: ${INTEGRATION_SERVICE_SERVER_PORT:8080}
+
+invoice:
+  integration:
+    ocr:
+      provider: ${INVOICE_INTEGRATION_OCR_PROVIDER:TENCENT_CLOUD}
+      mock-enabled: ${INVOICE_INTEGRATION_OCR_MOCK_ENABLED:false}
+      tencent:
+        enabled: ${INVOICE_TENCENT_OCR_ENABLED:true}
+        endpoint: ${INVOICE_TENCENT_OCR_ENDPOINT:https://ocr.tencentcloudapi.com}
+        host: ${INVOICE_TENCENT_OCR_HOST:ocr.tencentcloudapi.com}
+        service: ${INVOICE_TENCENT_OCR_SERVICE:ocr}
+        version: ${INVOICE_TENCENT_OCR_VERSION:2018-11-19}
+        region: ${INVOICE_TENCENT_OCR_REGION:ap-beijing}
+        language: ${INVOICE_TENCENT_OCR_LANGUAGE:zh-CN}
+        secret-id: ${INVOICE_TENCENT_OCR_SECRET_ID}
+        secret-key: ${INVOICE_TENCENT_OCR_SECRET_KEY}
+        token: ${INVOICE_TENCENT_OCR_TOKEN:}
+        timeout: ${INVOICE_TENCENT_OCR_TIMEOUT:30s}
+    storage:
+      provider: ${INVOICE_INTEGRATION_STORAGE_PROVIDER:LOCAL}
+      storage-type: ${INVOICE_INTEGRATION_STORAGE_TYPE:LOCAL}
+      bucket: ${INVOICE_STORAGE_BUCKET:invoice-files}
+      local-root: ${INVOICE_STORAGE_LOCAL_ROOT:build/storage/invoice-files}
+      public-base-url: ${INVOICE_STORAGE_PUBLIC_BASE_URL:}
+      presign-expires: ${INVOICE_STORAGE_PRESIGN_EXPIRES:5m}
+      local:
+        enabled: ${INVOICE_STORAGE_LOCAL_ENABLED:true}
+      tencent:
+        enabled: ${INVOICE_STORAGE_TENCENT_ENABLED:false}
+        region: ${INVOICE_STORAGE_TENCENT_REGION:ap-guangzhou}
+        secret-id: ${INVOICE_STORAGE_TENCENT_SECRET_ID}
+        secret-key: ${INVOICE_STORAGE_TENCENT_SECRET_KEY}
+        connection-timeout: ${INVOICE_STORAGE_TENCENT_CONNECTION_TIMEOUT:3s}
+        socket-timeout: ${INVOICE_STORAGE_TENCENT_SOCKET_TIMEOUT:10s}
+
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:http://jaeger-collector:4318/v1/traces}
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${INVOICE_DATASOURCE_URL}
+    username: ${INVOICE_DATASOURCE_USERNAME}
+    password:  ${INVOICE_DATASOURCE_PASSWORD}
+
+logging:
+  structured:
+    format:
+      console: logstash

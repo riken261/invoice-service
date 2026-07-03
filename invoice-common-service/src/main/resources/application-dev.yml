@@ -1,0 +1,40 @@
+server:
+  port: 8088
+
+invoice:
+  common:
+    session:
+      cookie-name: ${INVOICE_BFF_SESSION_COOKIE_NAME:INVOICE_BFF_SESSION}
+      redis-key-prefix: ${INVOICE_BFF_SESSION_REDIS_KEY_PREFIX:invoice:gateway:bff-session:}
+    nonce:
+      expires-seconds: ${INVOICE_NONCE_EXPIRES_SECONDS:300}
+      redis-key-prefix: ${INVOICE_NONCE_REDIS_KEY_PREFIX:invoice:common:nonce:}
+    core-service:
+      base-url: ${INVOICE_CORE_SERVICE_BASE_URL:http://localhost:8082}
+    claim-service:
+      base-url: ${INVOICE_CLAIM_SERVICE_BASE_URL:http://localhost:8085}
+
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://192.168.3.22:4318/v1/traces
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://192.168.3.22:5432/postgres?currentSchema=invoice_reimbursement
+    username: pgsql
+    password: pgsql
+    hikari:
+      maximum-pool-size: ${INVOICE_DATASOURCE_MAX_POOL_SIZE:3}
+      minimum-idle: ${INVOICE_DATASOURCE_MIN_IDLE:1}
+      idle-timeout: ${INVOICE_DATASOURCE_IDLE_TIMEOUT_MS:30000}
+      max-lifetime: ${INVOICE_DATASOURCE_MAX_LIFETIME_MS:600000}
+  data:
+    redis:
+      host: ${INVOICE_REDIS_HOST:192.168.3.22}
+      port: ${INVOICE_REDIS_PORT:6379}
+      database: ${INVOICE_REDIS_DATABASE:0}
+      password: ${INVOICE_REDIS_PASSWORD:}

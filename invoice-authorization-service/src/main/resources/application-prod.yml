@@ -1,0 +1,47 @@
+server:
+  port: ${AUTHORIZATION_SERVICE_SERVER_PORT:8080}
+
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:http://jaeger-collector:4318/v1/traces}
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${INVOICE_DATASOURCE_URL}
+    username: ${INVOICE_DATASOURCE_USERNAME}
+    password:  ${INVOICE_DATASOURCE_PASSWORD}
+  data:
+    redis:
+      host: ${INVOICE_REDIS_HOST}
+      port: ${INVOICE_REDIS_PORT}
+      database: ${INVOICE_REDIS_DATABASE}
+      password: ${INVOICE_REDIS_PASSWORD:}
+
+invoice:
+  authorization:
+    auth:
+      keycloak:
+        issuer-base-uri: ${INVOICE_KEYCLOAK_ISSUER_BASE_URI}
+        realm: ${INVOICE_KEYCLOAK_REALM}
+        client-id: ${INVOICE_KEYCLOAK_CLIENT_ID}
+        client-secret: ${INVOICE_KEYCLOAK_CLIENT_SECRET}
+        callback-uri: ${INVOICE_AUTH_CALLBACK_URI}
+        redirect-url: ${INVOICE_AUTH_REDIRECT_URL}
+      login-state:
+        expires-in: ${INVOICE_AUTH_LOGIN_STATE_EXPIRES_IN}
+        redis-key-prefix: ${INVOICE_AUTH_LOGIN_STATE_REDIS_KEY_PREFIX}
+      session:
+        cookie-name: ${INVOICE_BFF_SESSION_COOKIE_NAME}
+        expires-in: ${INVOICE_BFF_SESSION_EXPIRES_IN}
+        secure: ${INVOICE_BFF_SESSION_SECURE}
+        same-site: ${INVOICE_BFF_SESSION_SAME_SITE}
+        redis-key-prefix: ${INVOICE_BFF_SESSION_REDIS_KEY_PREFIX}
+
+logging:
+  structured:
+    format:
+      console: logstash

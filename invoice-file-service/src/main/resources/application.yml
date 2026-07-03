@@ -1,0 +1,79 @@
+spring:
+  application:
+    name: invoice-file-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  cloud:
+    openfeign:
+      micrometer:
+        enabled: true
+      client:
+        config:
+          default:
+            connectTimeout: 3000
+            readTimeout: 10000
+            loggerLevel: basic
+          invoice-integration-service:
+            connectTimeout: 3000
+            readTimeout: 10000
+      circuitbreaker:
+        enabled: true
+        alphanumeric-ids:
+          enabled: true
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 10
+        slidingWindowSize: 20
+        waitDurationInOpenState: 30s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slowCallDurationThreshold: 5s
+        slowCallRateThreshold: 80
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 35s
+        cancelRunningFuture: true
+
+management:
+  observations:
+    key-values:
+      application: ${spring.application.name}
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  tracing:
+    propagation:
+      produce:
+        - W3C
+      consume:
+        - W3C
+    sampling:
+      probability: 1.0
+
+invoice:
+  file:
+    storage:
+      provider: ${INVOICE_FILE_STORAGE_PROVIDER:LOCAL}
+      type: ${INVOICE_FILE_STORAGE_TYPE:LOCAL}
+      bucket: ${INVOICE_FILE_STORAGE_BUCKET:invoice-files}
+    max-size-bytes: ${INVOICE_FILE_MAX_SIZE_BYTES:20971520}
+    allowed-content-types: ${INVOICE_FILE_ALLOWED_CONTENT_TYPES:application/pdf,image/jpeg,image/png}
+    access:
+      preview-expires-seconds: ${INVOICE_FILE_PREVIEW_EXPIRES_SECONDS:600}
+      download-expires-seconds: ${INVOICE_FILE_DOWNLOAD_EXPIRES_SECONDS:300}
+    integration:
+      base-url: ${INVOICE_INTEGRATION_SERVICE_BASE_URL:http://localhost:8086}

@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: invoice-common-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  cloud:
+    openfeign:
+      micrometer:
+        enabled: true
+      client:
+        config:
+          default:
+            connectTimeout: 3000
+            readTimeout: 10000
+            loggerLevel: basic
+      circuitbreaker:
+        enabled: true
+        alphanumeric-ids:
+          enabled: true
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 10
+        slidingWindowSize: 20
+        waitDurationInOpenState: 30s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slowCallDurationThreshold: 5s
+        slowCallRateThreshold: 80
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 35s
+        cancelRunningFuture: true
+
+management:
+  observations:
+    key-values:
+      application: ${spring.application.name}
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  tracing:
+    propagation:
+      produce:
+        - W3C
+      consume:
+        - W3C
+    sampling:
+      probability: 1.0
+
+invoice:
+  common:
+    session:
+      cookie-name: ${INVOICE_BFF_SESSION_COOKIE_NAME:INVOICE_BFF_SESSION}
+      redis-key-prefix: ${INVOICE_BFF_SESSION_REDIS_KEY_PREFIX:invoice:gateway:bff-session:}
+    nonce:
+      expires-seconds: ${INVOICE_NONCE_EXPIRES_SECONDS:300}
+      redis-key-prefix: ${INVOICE_NONCE_REDIS_KEY_PREFIX:invoice:common:nonce:}
+    core-service:
+      base-url: ${INVOICE_CORE_SERVICE_BASE_URL:http://localhost:8082}
+    claim-service:
+      base-url: ${INVOICE_CLAIM_SERVICE_BASE_URL:http://localhost:8085}
+    review-service:
+      base-url: ${INVOICE_REVIEW_SERVICE_BASE_URL:http://localhost:8084}
